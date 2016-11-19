@@ -96,13 +96,7 @@ Here are some thoughts about the future of this project.
 ### Parallel execution (multithreading)
 This would allow to multiply performance by the number of threads, which is not superfluous in today's architectures. Parallel execution may even enable us to use graphics cards to encrypt or decrypt files.
 
-In order to achieve this, we could divide files in blocks of n<sup>2</sup> bytes, each being treated by one thread at a time. The size of n<sup>2</sup> would allow us to avoid initialization of the rotors : (j+n<sup>2</sup>) % n = j and (j+n<sup>2</sup>) // n = j
-
-Je propose pour ce faire de découper le fichier en blocs logiques de quelques dizaines d'octets (la taille exacte devrait être déterminée par essais et erreurs). Chaque bloc ne pourrait être utilisé que par un thread à la fois (utilisation de mutexes).
-
-La fonction principale déclencherait l'exécution des threads les uns après les autres (avec un nombre maximum configurable), chacun étant responsable d'une passe (et donc initialisé avec le mot de passe correct). Ils se livreraient une course effrénée vers la fin du fichier (sans pouvoir se dépasser afin de préserver l'ordre des passes).
-
-Une fois qu'un thread aurait terminé de travailler, il le ferait savoir à la fonction principale (comment ?) qui lui attribuerait une nouvelle passe et le relancerait, réutilisant les threads pour éviter d'appeler trop souvent les fonctions système qui les créent (elles sont peut-être lentes).
+In order to achieve this, we could divide files in blocks of n<sup>2</sup> bytes, each being treated by one thread at a time. The size of n<sup>2</sup> would allow us to avoid initialization of the rotors : (j+n<sup>2</sup>) % n = j and ((j+n<sup>2</sup>) // n) mod n = j. Maximum number of threads could be given as a parameter or determined by a systems library. Furthermore, once the first thread is done computing one block, it can immediately start computing the next available block -even before the next threads are done- or start a new pass for the first block (if the previous pass for the same block is finished). Recycling the threads would allow to gain time since thread creation may not be optimized on the system.
 
 ### Password generation
 By allowing a user to generate the password from a sentence or series of words we could make it manageable to remember the password, and avoir users writing them down or choosing easy to remember -and guess- passwords. Here's an idea for a password generator :  
