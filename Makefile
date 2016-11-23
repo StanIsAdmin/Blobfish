@@ -10,4 +10,4 @@ debug:
 	g++ -Wall -std=c++11 -g src/main.cpp -o bin/blobfish
 	
 clean:
-	rm -r bin
+	rm bin/blobfish
