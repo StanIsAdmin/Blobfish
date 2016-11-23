@@ -8,8 +8,7 @@
 #include <array>
 
 
-typedef unsigned int uint;
-typedef unsigned char byte;
+typedef uint8_t byte;
 
 template <uint SIZE>
 using bytefield = std::array<byte, SIZE>;
