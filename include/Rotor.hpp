@@ -16,15 +16,14 @@
  * The key is a bytefield that contains xor values.
  */
 template<uint SIZE>
-class Rotor
-{
+class Rotor {
   public:
 	// Constructor takes a reference to the key
 	Rotor(const bytefield<SIZE>& key);
-	
+
 	// Access operator computes the permutation of value x
-	byte operator [](const byte x);
-	
+	byte operator[](const byte x);
+
 	// Set the starting index
 	void setindex();
 
@@ -34,27 +33,24 @@ class Rotor
 };
 
 template <uint SIZE>
-Rotor<SIZE>::Rotor(const bytefield<SIZE>& key):
-	keyRef(key)
-{
+Rotor<SIZE>::Rotor(const bytefield<SIZE>& key) :
+keyRef(key) {
 	setindex();
 }
 
 template<uint SIZE> inline
-byte Rotor<SIZE>::operator [](const byte x)
-{
+byte Rotor<SIZE>::operator[](const byte x) {
 	index++; // Increment index
 	return x xor keyRef[index % SIZE]; // xor x with value from keyRef at index
 }
 
 template<uint SIZE> inline
-void Rotor<SIZE>::setindex()
-{
+void Rotor<SIZE>::setindex() {
 	// Initialize index as distance between min and max values
 	uint start = 0;
-	for ( ; keyRef[start] != 0 && keyRef[start] != SIZE-1; ++start) ;
+	for (; keyRef[start] != 0 && keyRef[start] != SIZE - 1; ++start);
 	uint end = start;
-	for ( ; keyRef[end] != 0 && keyRef[end] != SIZE-1; ++end) ;
+	for (; keyRef[end] != 0 && keyRef[end] != SIZE - 1; ++end);
 	index = end - start - 1;
 }
 
