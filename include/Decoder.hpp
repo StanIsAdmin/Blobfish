@@ -20,23 +20,20 @@ class Decoder : public Coder<SIZE> {
     void makeInverseKey();
 
     using Coder<SIZE>::key;
+    using Coder<SIZE>::rotor;
     using Coder<SIZE>::count;
 
     bytefield<SIZE> inverseKey; // Key used for inverse permutation
-
+    
     // Permutation that swaps pairs, based on the key.
     Plugboard<SIZE> plugboard;
-
-    // Rotor that xors values, based on the key
-    Rotor<SIZE> rotor;
 };
 
 template <uint SIZE>
 Decoder<SIZE>::Decoder(const bytefield<SIZE>& newKey) :
     Coder<SIZE>(newKey),
-    inverseKey(),
-    plugboard(inverseKey),
-    rotor(key) {
+    inverseKey(newKey),
+    plugboard(inverseKey) {
     makeInverseKey();
 }
 
@@ -65,8 +62,8 @@ void Decoder<SIZE>::setKey(const bytefield<SIZE>& newKey) {
 
 template<uint SIZE>
 void Decoder<SIZE>::makeInverseKey() {
-    for (unsigned char i = 0; i < SIZE; ++i) {
-        inverseKey[key[i]] = i;
+    for (unsigned i = 0; i < SIZE; ++i) {
+        inverseKey[key[i]] = static_cast<byte>(i);
     }
 }
 

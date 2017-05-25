@@ -37,7 +37,7 @@ int main(int argc, char* argv[]) {
     const char *IN_FILE = argv[2]; // Input file
     const char *OUT_FILE = argv[3]; // Output file
 
-    const int T = 1; // Number of passes
+    const unsigned int ITERATIONS = 1; // Number of passes
     const unsigned int PWD_SIZE = 256; // Range of accepted values
     std::array<unsigned char, PWD_SIZE> password; // Password
 
@@ -57,16 +57,12 @@ int main(int argc, char* argv[]) {
         127, 87, 16, 41, 249, 94, 8, 63, 160, 247};
 
     // Read file data to memory buffer
-    const long long size = fileSize(IN_FILE);
-    char *data = static_cast<char*>(malloc(size));
+    const long long file_size = fileSize(IN_FILE);
+    char *data = static_cast<char*>(malloc(file_size));
     std::ifstream in;
     in.open(IN_FILE);
-    in.read(data, size);
+    in.read(data, file_size);
     in.close();
-
-    // Begin chronometring
-    using namespace std::chrono;
-    high_resolution_clock::time_point t1 = high_resolution_clock::now();
 
     // Coder (encoder or decoder)
     Coder<PWD_SIZE>* coder;
@@ -75,12 +71,16 @@ int main(int argc, char* argv[]) {
     } else {
         coder = new Decoder<PWD_SIZE>(password);
     }
+    
+    // Begin timing
+    using namespace std::chrono;
+    high_resolution_clock::time_point t1 = high_resolution_clock::now();
 
     // for each pass
-    for (int i = 0; i < T; ++i) {
+    for (unsigned i = 0; i < ITERATIONS; ++i) {
 
         // Code the data
-        for (long k = 0; k < size; ++k) {
+        for (long k = 0; k < file_size; ++k) {
             data[k] = coder->code(data[k]);
         }
 
@@ -94,23 +94,22 @@ int main(int argc, char* argv[]) {
         coder->setKey(password);
     }
 
-    // End chronometring and display result
+    // End timing and display result
     high_resolution_clock::time_point t2 = high_resolution_clock::now();
     duration<double> time_span = duration_cast<duration<double>>(t2 - t1);
 
     if (encrypting) {
-        std::cout << size << " bytes encrypted " << T << " times in " <<
+        std::cout << file_size << " bytes encrypted " << ITERATIONS << " times in " <<
             time_span.count() << " seconds." << std::endl;
     } else {
-        std::cout << size << " bytes decrypted " << T << " times in " <<
+        std::cout << file_size << " bytes decrypted " << ITERATIONS << " times in " <<
             time_span.count() << " seconds." << std::endl;
     }
-
 
     // Write to output file.
     std::ofstream out;
     out.open(OUT_FILE);
-    out.write(data, size);
+    out.write(data, file_size);
     out.close();
 
     // Clean up buffer.

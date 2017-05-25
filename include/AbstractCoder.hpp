@@ -36,13 +36,19 @@ class Coder {
     // Modifies the key in a determined fashion
     virtual void xorKey();
 
-    bytefield<SIZE> key; // Copy of key used for encryption
+    // Copy of key used for encryption
+    bytefield<SIZE> key;
+
+    // Rotor that xors values, based on the key
+    Rotor<SIZE> rotor;
+    
     uint count = 0; // Number of chars encoded
 };
 
 template <uint SIZE>
-Coder<SIZE>::Coder(const bytefield<SIZE>& newKey) :
-    key(newKey) {
+Coder<SIZE>::Coder(const bytefield<SIZE>& key) :
+    key(key),
+    rotor(key) {
 }
 
 template <unsigned int SIZE>
@@ -53,7 +59,7 @@ void Coder<SIZE>::setKey(const bytefield<SIZE>& newKey) {
 template <unsigned int SIZE>
 void Coder<SIZE>::xorKey() {
     const byte xorValue = key[(count / SIZE - 1) % SIZE];
-    for (byte i = 0; i < SIZE; ++i) {
+    for (uint i = 0; i < SIZE; ++i) {
         key[i] ^= xorValue;
     }
 }

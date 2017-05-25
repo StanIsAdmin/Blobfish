@@ -15,20 +15,17 @@ class Encoder : public Coder<SIZE> {
 
   protected:
     using Coder<SIZE>::key;
+    using Coder<SIZE>::rotor;
     using Coder<SIZE>::count;
-
+    
     // Permutation that swaps pairs, based on the key.
     Plugboard<SIZE> plugboard;
-
-    // Rotor that xors values, based on the key
-    Rotor<SIZE> rotor;
 };
 
 template <uint SIZE>
 Encoder<SIZE>::Encoder(const bytefield<SIZE>& newKey) :
     Coder<SIZE>(newKey),
-    plugboard(key),
-    rotor(key) {
+    plugboard(key) {
 }
 
 template <uint SIZE>

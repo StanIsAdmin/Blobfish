@@ -12,8 +12,9 @@
 
 #include "Types.hpp"
 
-/* A permutation is a map between values of the same set.
- * The domain and image of the permutation is the range [0, SIZE[. */
+/* A Plugboard maps values of the same set together, by pairs.
+ * The domain and image of the permutation is the range [0, SIZE-1]. 
+ */
 template<uint SIZE>
 class Plugboard {
   public:

@@ -13,7 +13,8 @@
 #include "Types.hpp"
 
 /* A rotor is mostly a way to xor values based on a key.
- * The key is a bytefield that contains xor values. */
+ * The key is a bytefield that contains xor values. 
+ */
 template<uint SIZE>
 class Rotor {
   public:
