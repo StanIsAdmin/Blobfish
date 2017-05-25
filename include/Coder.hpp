@@ -1,3 +1,6 @@
+#ifndef CODER_H
+#define CODER_H
+
 #include <chrono>
 #include <cstdlib>
 #include <fstream>
@@ -7,95 +10,9 @@
 #include <string>
 #include <array>
 
-
-typedef uint8_t byte;
-
-template <uint SIZE>
-using bytefield = std::array<byte, SIZE>;
-
-
-// ---------- PERMUTATION ----------
-
-/* A permutation is a map between values of the same set.
- * The domain and image of the permutation is the range [0, SIZE[
- */
-template<uint SIZE>
-class Permutation
-{
-  public:
-	// Constructor takes a reference to the key
-	Permutation(const bytefield<SIZE>& key);
-	
-	// Access operator computes the permutation of value x
-	virtual byte operator [](const byte x) const;
-  
-  protected:
-	const bytefield<SIZE>& keyRef; // Reference to the key as const
-};
-
-template <uint SIZE>
-Permutation<SIZE>::Permutation(const bytefield<SIZE>& key):
-	keyRef(key)
-{
-}
-
-template<uint SIZE> inline
-byte Permutation<SIZE>::operator [](const byte x) const
-{
-	return keyRef[x];
-}
-
-
-// ---------- ROTOR ----------
-
-/* A rotor is mostly a way to xor values based on a key.
- * The key is an bytefield that contains xor values.
- */
-template<uint SIZE>
-class Rotor
-{
-  public:
-	// Constructor takes a reference to the key
-	Rotor(const bytefield<SIZE>& key);
-	
-	// Access operator computes the permutation of value x
-	byte operator [](const byte x);
-	
-	// Set the starting index
-	void setindex();
-
-  private:
-	uint index = 0; // Index of the xor value to use
-	const bytefield<SIZE>& keyRef; // Reference to the key as const
-};
-
-template <uint SIZE>
-Rotor<SIZE>::Rotor(const bytefield<SIZE>& key):
-	keyRef(key)
-{
-	setindex();
-}
-
-template<uint SIZE> inline
-byte Rotor<SIZE>::operator [](const byte x)
-{
-	index++; // Increment index
-	return x xor keyRef[index % SIZE]; // xor x with value from keyRef at index
-}
-
-template<uint SIZE> inline
-void Rotor<SIZE>::setindex()
-{
-	// Initialize index as distance between min and max values
-	uint start = 0;
-	for ( ; keyRef[start] != 0 && keyRef[start] != SIZE-1; ++start) ;
-	uint end = start;
-	for ( ; keyRef[end] != 0 && keyRef[end] != SIZE-1; ++end) ;
-	index = end - start - 1;
-}
-
-
-// ---------- CODER ----------
+#include "Types.hpp"
+#include "Permutation.hpp"
+#include "Rotor.hpp"
 
 /* Main encoding logic. Encoder currently can only manage a single
  * pass of char-by-char encoding.
@@ -109,7 +26,7 @@ class Coder
 	// Default constructor
 	Coder(const bytefield<SIZE>& newKey);
 	
-	// Encodes a character. 'x' must be in the interval [0, 255].
+	// Encodes a character. 'x' must be in the interval [0, SIZE).
 	virtual byte code(const byte x) = 0;
 	
 	// Changes the encoding key
@@ -122,7 +39,7 @@ class Coder
 	uint count = 0; // Number of chars encoded
 };
 
-template <unsigned int SIZE>
+template <uint SIZE>
 Coder<SIZE>::Coder(const bytefield<SIZE>& newKey):
 	key(newKey)
 {
@@ -279,3 +196,5 @@ long fileSize(const char *fileName)
 	file.close();
 	return end - begin;
 }
+
+#endif //CODER_H

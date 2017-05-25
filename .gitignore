@@ -1,6 +1,9 @@
 assets/
 bin/
 
+# Netbeans
+nbproject/
+
 # Compiled Object files
 *.slo
 *.lo
